@@ -1,0 +1,23 @@
+installAll <- function(){
+
+install.packages("shiny")
+install.packages("shinydashboard")
+install.packages("mapdeck") 
+install.packages("colourvalues")
+install.packages("tidyverse")
+install.packages("ggplot2")
+install.packages("googleVis")
+install.packages("colourvalues")
+install.packages("jsonify")
+install.packages("geojsonsf")
+install.packages("spatialwidget")
+install.packages("googlePolylines")
+install.packages("ncdf4")
+install.packages("raster")
+install.packages("rgdal")
+install.packages("tmap")
+install.packages("maps")
+install.packages("ggiraph")
+install.packages("sysfonts")
+install.packages("mapproj")
+}

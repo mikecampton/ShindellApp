@@ -1,4 +1,3 @@
-installAll <- function(){
 
 install.packages("shiny")
 install.packages("shinydashboard")
@@ -20,4 +19,3 @@ install.packages("maps")
 install.packages("ggiraph")
 install.packages("sysfonts")
 install.packages("mapproj")
-}

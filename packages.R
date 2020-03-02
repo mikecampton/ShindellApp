@@ -1,4 +1,6 @@
-
+#Do NOT upload to website
+#this file is simply packages to install for compatibility on a local computer
+# the packages are already installed on the Shiny Server.
 install.packages("shiny")
 install.packages("shinydashboard")
 install.packages("mapdeck") 

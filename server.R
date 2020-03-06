@@ -6,15 +6,20 @@ agebinpop <- read.csv("csvData/AgeBinnedPop.csv")
 initialO3 <- read.csv("csvData/InitialO3.csv")
 baselinemortality <- read.csv("csvData/BaselineMortality.csv")
 afFormat <-read.csv("csvData/AFFormatted.csv")
+allagePop <-read.csv("csvData/AllAgePopulation.csv")
+surfaceTemp <-read.csv("csvData/Country_Level_Temp_Change_MMM_1StandardErrors_50%_ValidDataEachCountry.csv")
+nationalVSL <-read.csv("csvData/VSL2018USD.csv")
+asthmaERV <-read.csv("csvData/AsthmaEV4Mar2020.csv")
+
 shinyServer(function(input, output){
-  
-  cat("\nEXECUTION ", format(Sys.time(), "%a %b %d %X %Y"), "\n", file=stderr())
-  #Environment variables
+
+cat("\nEXECUTION ", format(Sys.time(), "%a %b %d %X %Y"), "\n", file=stderr())
+#cat("\n\nAAAAAAAAAAAAAAAAAAAA\n\n", file=stderr())
+  #Environment variablesmor 
   EpiHR = 1.12
   EpiHRLow = 1.08
   EpiHRHigh = 1.16
   EpiTMREL = 26.3
-  InputCH4Change = 556
   EpiBeta = .01133
   
   #text render
@@ -26,21 +31,73 @@ shinyServer(function(input, output){
   df<-data.frame(countries_mmm["Country"],countries_mmm["ANN_MDA8Sim2.Sim1.Diff."])
   dfO3 <-data.frame(initialO3["Country"],initialO3["MMM.Initial.O3..ppb."])
   #Ozone Delta Map
-  
+
   output$ozoneCountry_2040 <- renderggiraph({
     world <- map_data("world")
-    ozoneDF<-setNames(data.frame(df[1],df[2]*-1*input$obs*(1/556)),c("Country","OzoneReduction"))
+    ozoneDF<-setNames(data.frame(df[1],df[2]*-1*input$obs*(1/170)),c("Country","OzoneReduction"))
     map.world_joined <- left_join(world, ozoneDF, by = c('region' = 'Country'))
-    # using width="auto"y and height="auto" to
+    # using width="auto" and height="auto" to
     # automatically adjust the map size
     gg<-ggplot() + geom_polygon_interactive(data = map.world_joined, 
-                                            aes(x = long, y = lat, group = group, fill = OzoneReduction, tooltip=sprintf("%s<br/>%s",region,OzoneReduction)))
+                                            aes(x = long, y = lat, group = group, fill = OzoneReduction, tooltip
+=sprintf("%s<br/>%s",region,OzoneReduction)))
     gg<-gg+ coord_proj("+proj=robin +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs")
     gg<-gg+theme_map()
     ggiraph(code = print(gg), width_svg=10)
   })
-  
-  #Delta Mortality Map
+
+  #Delta Surface Temperature Map
+
+  dfSAT <- data.frame(surfaceTemp["Country"],surfaceTemp["NationalAverageC"])
+  output$dSAT_2040 <-renderggiraph({
+    world <- map_data("world")
+    satDF<-setNames(data.frame(df[1],dfSAT[2]*input$obs*(1/170)),c("Country","AvoidedWarming"))
+    map.world_joined <- left_join(world, satDF, by = c('region' = 'Country'))
+    # using width="auto" and height="auto" to
+    # automatically adjust the map size
+    gg<-ggplot() + geom_polygon_interactive(data = map.world_joined, 
+                                            aes(x = long, y = lat, group = group, fill = AvoidedWarming, tooltip
+=sprintf("%s<br/>%s",region,AvoidedWarming)))
+    gg<-gg+ coord_proj("+proj=robin +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs")
+    gg<-gg+theme_map()
+    ggiraph(code = print(gg), width_svg=10)
+  })
+
+  #Delta Asthma-related ER visits Map
+
+  dfAsthmaER <- data.frame(asthmaERV["Country"],asthmaERV["CasesMEANper10Mt"],asthmaERV["CostsMEAN2018USDperkt"])
+  output$ozoneAsthmaER_2040 <-renderggiraph({
+    world <- map_data("world")
+    asthmaDF<-setNames(data.frame(df[1], dfAsthmaER[2]*input$obs*(1/10)),c("Country","AvoidedVisits"))
+    map.world_joined <- left_join(world, asthmaDF, by = c('region' = 'Country'))
+    # using width="auto" and height="auto" to
+    # automatically adjust the map size
+    gg<-ggplot() + geom_polygon_interactive(data = map.world_joined, 
+                                            aes(x = long, y = lat, group = group, fill = AvoidedVisits, tooltip
+=sprintf("%s<br/>%s",region, AvoidedVisits)))
+    gg<-gg+ coord_proj("+proj=robin +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs")
+    gg<-gg+theme_map()
+    ggiraph(code = print(gg), width_svg=10)
+  })
+
+  #Delta Costs Asthma-related ER visits Map
+
+  #dfAsthmaER <- data.frame(asthmaERV["Country"],asthmaERV["CasesMEANper10Mt"],asthmaERV["CostsMEAN2018USDperkt"])
+  output$ozoneAsthmaERCost_2040 <-renderggiraph({
+    world <- map_data("world")
+    asthmaDFcost<-setNames(data.frame(df[1], dfAsthmaER[3]*input$obs*(1000)),c("Country","AvoidedCosts"))
+    map.world_joined <- left_join(world, asthmaDFcost, by = c('region' = 'Country'))
+    # using width="auto" and height="auto" to
+    # automatically adjust the map size
+    gg<-ggplot() + geom_polygon_interactive(data = map.world_joined, 
+                                            aes(x = long, y = lat, group = group, fill = AvoidedCosts, tooltip
+=sprintf("%s<br/>%s",region, AvoidedCosts)))
+    gg<-gg+ coord_proj("+proj=robin +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs")
+    gg<-gg+theme_map()
+    ggiraph(code = print(gg), width_svg=10)
+  })
+
+  #Delta Total Mortality Map
   
   dfAF <- data.frame(afFormat["TotalOAF"],afFormat["InitialMort"])
   #avoided deaths - 2045 is just temporary
@@ -53,8 +110,8 @@ shinyServer(function(input, output){
     #=X4-AK4
     
     #below sets up the two columns of the truth statement for Mean AF
-    meanAF<-data.frame((data.frame((df[2]*-1*input$obs*(1/556))-EpiTMREL)+dfO3[2]))
-    tempExpFrame<-data.frame(1-exp((data.frame((df[2]*-1*input$obs*(1/556))-EpiTMREL)+dfO3[2])*-1*EpiBeta))
+    meanAF<-data.frame((data.frame((df[2]*input$obs*(1/170))-EpiTMREL)+dfO3[2]))
+    tempExpFrame<-data.frame(1-exp((data.frame((df[2]*input$obs*(1/170))-EpiTMREL)+dfO3[2])*-1*EpiBeta))
     #below is the Mean AF
     meanAF[2] <- ifelse(meanAF[1]<0,0,tempExpFrame[1])
     deathCol<-ceiling(-1*data.frame(meanAF[2])*dfAF[1]+dfAF[2])
@@ -65,14 +122,64 @@ shinyServer(function(input, output){
     world <- map_data("world")
     map.world_joined <- left_join(world, dfDeaths, by = c('region' = 'Country'))
     gg<-ggplot() + geom_polygon_interactive(data = map.world_joined, 
-                                            aes(x = long, y = lat, group = group, fill = AvoidedDeaths, tooltip=sprintf("%s<br/>%s",region,AvoidedDeaths)))
+                                            aes(x = long, y = lat, group = group, fill = AvoidedDeaths, tooltip=
+sprintf("%s<br/>%s",region,AvoidedDeaths)))
+    gg<-gg+ coord_proj("+proj=robin +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs")
+    gg<-gg+theme_map() 
+    ggiraph(code = print(gg), width_svg=10)
+  })
+
+  #Delta Per Capita Mortality Map
+  
+  dfPOP <- data.frame(allagePop["Country"],allagePop["Population"])
+  output$dMortCountry_capita_2040 <-renderggiraph({
+    
+    #below sets up the two columns of the truth statement for Mean AF
+    meanAF<-data.frame((data.frame((df[2]*input$obs*(1/170))-EpiTMREL)+dfO3[2]))
+    tempExpFrame<-data.frame(1-exp((data.frame((df[2]*input$obs*(1/170))-EpiTMREL)+dfO3[2])*-1*EpiBeta))
+    #below is the Mean AF
+    meanAF[2] <- ifelse(meanAF[1]<0,0,tempExpFrame[1])
+    deathCol<-ceiling((-1*data.frame(meanAF[2])*dfAF[1]+dfAF[2])/(dfPOP[2]/1000000))
+    deathFram <- data.frame(df[1],deathCol)
+    dfDeaths <- setNames(deathFram,c("Country","AvoidedDeaths"))
+    
+    #plot everything below
+    world <- map_data("world")
+    map.world_joined <- left_join(world, dfDeaths, by = c('region' = 'Country'))
+    gg<-ggplot() + geom_polygon_interactive(data = map.world_joined, 
+                                            aes(x = long, y = lat, group = group, fill = AvoidedDeaths, tooltip=
+sprintf("%s<br/>%s",region,AvoidedDeaths)))
+    gg<-gg+ coord_proj("+proj=robin +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs")
+    gg<-gg+theme_map() 
+    ggiraph(code = print(gg), width_svg=10)
+  })
+
+  #Delta Valuation of Reduced Mortality Map
+  
+  dfVSL <- data.frame(nationalVSL["Country"],nationalVSL["VSLmillionsUSD2018"])
+  output$dMortCountry_VSL_2040 <-renderggiraph({
+    
+    #below sets up the two columns of the truth statement for Mean AF
+    meanAF<-data.frame((data.frame((df[2]*input$obs*(1/170))-EpiTMREL)+dfO3[2]))
+    tempExpFrame<-data.frame(1-exp((data.frame((df[2]*input$obs*(1/170))-EpiTMREL)+dfO3[2])*-1*EpiBeta))
+    #below is the Mean AF
+    meanAF[2] <- ifelse(meanAF[1]<0,0,tempExpFrame[1])
+    deathCol<-ceiling((-1*data.frame(meanAF[2])*dfAF[1]+dfAF[2])*dfVSL[2])
+    deathFram <- data.frame(df[1],deathCol)
+    dfDeaths <- setNames(deathFram,c("Country","MillionsUSD"))
+    
+    #plot everything below
+    world <- map_data("world")
+    map.world_joined <- left_join(world, dfDeaths, by = c('region' = 'Country'))
+    gg<-ggplot() + geom_polygon_interactive(data = map.world_joined, 
+                                            aes(x = long, y = lat, group = group, fill = MillionsUSD, tooltip=
+sprintf("%s<br/>%s",region,MillionsUSD)))
     gg<-gg+ coord_proj("+proj=robin +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs")
     gg<-gg+theme_map() 
     ggiraph(code = print(gg), width_svg=10)
   })
 })
 #geom_sf will work for netcdf files likely.
-
 
 
 

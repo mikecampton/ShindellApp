@@ -37,7 +37,7 @@ cat("\nEXECUTION ", format(Sys.time(), "%a %b %d %X %Y"), "\n", file=stderr())
     gg<-ggplot() + geom_polygon_interactive(data = map.world_joined, 
                                             aes(x = long, y = lat, group = group, fill = OzoneReduction, tooltip
 =sprintf("%s<br/>%s",region,OzoneReduction)))
-    gg<-gg+ scale_fill_gradient(low = "#999999", high = "#FF3333")
+    gg<-gg+ scale_fill_gradient(low = "grey95", high = "tomato")
     gg<-gg+ coord_proj("+proj=robin +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs")
     gg<-gg+theme_map()
     ggiraph(code = print(gg), width_svg=10)
@@ -55,7 +55,7 @@ cat("\nEXECUTION ", format(Sys.time(), "%a %b %d %X %Y"), "\n", file=stderr())
     gg<-ggplot() + geom_polygon_interactive(data = map.world_joined, 
                                             aes(x = long, y = lat, group = group, fill = AvoidedWarming, tooltip
 =sprintf("%s<br/>%s",region,AvoidedWarming)))
-     gg<-gg+ scale_fill_gradient(low = "#999999", high = "#FF3333")
+     gg<-gg+ scale_fill_gradient(low = "grey95", high = "tomato")
     gg<-gg+ coord_proj("+proj=robin +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs")
     gg<-gg+theme_map()
     ggiraph(code = print(gg), width_svg=10)
@@ -73,7 +73,7 @@ cat("\nEXECUTION ", format(Sys.time(), "%a %b %d %X %Y"), "\n", file=stderr())
     gg<-ggplot() + geom_polygon_interactive(data = map.world_joined, 
                                             aes(x = long, y = lat, group = group, fill = AvoidedVisits, tooltip
 =sprintf("%s<br/>%s",region, AvoidedVisits)))
-    gg<-gg+ scale_fill_gradient(low = "#999999", high = "#FF3333")
+    gg<-gg+ scale_fill_gradient(low = "grey95", high = "tomato")
     gg<-gg+ coord_proj("+proj=robin +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs")
     gg<-gg+theme_map()
     ggiraph(code = print(gg), width_svg=10)
@@ -91,7 +91,7 @@ cat("\nEXECUTION ", format(Sys.time(), "%a %b %d %X %Y"), "\n", file=stderr())
     gg<-ggplot() + geom_polygon_interactive(data = map.world_joined, 
                                             aes(x = long, y = lat, group = group, fill = AvoidedCosts, tooltip
 =sprintf("%s<br/>%s",region, AvoidedCosts)))
-     gg<-gg+ scale_fill_gradient(low = "#999999", high = "#FF3333")
+     gg<-gg+ scale_fill_gradient(low = "grey95", high = "tomato")
     gg<-gg+ coord_proj("+proj=robin +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs")
     gg<-gg+theme_map()
     ggiraph(code = print(gg), width_svg=10)
@@ -117,7 +117,7 @@ cat("\nEXECUTION ", format(Sys.time(), "%a %b %d %X %Y"), "\n", file=stderr())
     gg<-ggplot() + geom_polygon_interactive(data = map.world_joined, 
                                             aes(x = long, y = lat, group = group, fill = AvoidedDeaths, tooltip=
 sprintf("%s<br/>%s",region,AvoidedDeaths)))
-     gg<-gg+ scale_fill_gradient(low = "#999999", high = "#FF3333")
+     gg<-gg+ scale_fill_gradient(low = "grey95", high = "tomato")
     gg<-gg+ coord_proj("+proj=robin +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs")
     gg<-gg+theme_map() 
     ggiraph(code = print(gg), width_svg=10)
@@ -143,7 +143,7 @@ sprintf("%s<br/>%s",region,AvoidedDeaths)))
     gg<-ggplot() + geom_polygon_interactive(data = map.world_joined, 
                                             aes(x = long, y = lat, group = group, fill = AvoidedDeaths, tooltip=
 sprintf("%s<br/>%s",region,AvoidedDeaths)))
-     gg<-gg+ scale_fill_gradient(low = "#999999", high = "#FF3333")
+     gg<-gg+ scale_fill_gradient(low = "grey95", high = "tomato")
     gg<-gg+ coord_proj("+proj=robin +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs")
     gg<-gg+theme_map() 
     ggiraph(code = print(gg), width_svg=10)
@@ -169,7 +169,7 @@ sprintf("%s<br/>%s",region,AvoidedDeaths)))
     gg<-ggplot() + geom_polygon_interactive(data = map.world_joined, 
                                             aes(x = long, y = lat, group = group, fill = MillionsUSD, tooltip=
 sprintf("%s<br/>%s",region,MillionsUSD)))
-     gg<-gg+ scale_fill_gradient(low = "#999999", high = "#FF3333")
+     gg<-gg+ scale_fill_gradient(low = "grey95", high = "tomato")
     gg<-gg+ coord_proj("+proj=robin +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs")
     gg<-gg+theme_map() 
     ggiraph(code = print(gg), width_svg=10)

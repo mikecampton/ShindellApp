@@ -17,7 +17,7 @@ library(ggthemes)
 library(ggiraph)
 library(mapproj)
 
-initialCH4Change = 170
+initialCH4Change = 134
 
 shinyUI(dashboardPage(skin='blue',
   dashboardHeader(

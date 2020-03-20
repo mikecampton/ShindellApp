@@ -2,9 +2,7 @@
 countries_dMort <-read.csv("csvData/GISS_Run3_2000.csv")
 countries_mmm <-read.csv("csvData/MMMresults.csv")
 initialmort <- read.csv("csvData/InitialMort.csv")
-agebinpop <- read.csv("csvData/AgeBinnedPop.csv")
 initialO3 <- read.csv("csvData/InitialO3.csv")
-baselinemortality <- read.csv("csvData/BaselineMortality.csv")
 afFormat <-read.csv("csvData/AFFormatted.csv")
 allagePop <-read.csv("csvData/AllAgePopulation.csv")
 surfaceTemp <-read.csv("csvData/Country_Level_Temp_Change_MMM_1StandardErrors_50%_ValidDataEachCountry.csv")
@@ -17,8 +15,6 @@ cat("\nEXECUTION ", format(Sys.time(), "%a %b %d %X %Y"), "\n", file=stderr())
 #cat("\n\nAAAAAAAAAAAAAAAAAAAA\n\n", file=stderr())
   #Environment variablesmor 
   EpiHR = 1.12
-  EpiHRLow = 1.08
-  EpiHRHigh = 1.16
   EpiTMREL = 26.3
   EpiBeta = .01133
   
@@ -34,7 +30,7 @@ cat("\nEXECUTION ", format(Sys.time(), "%a %b %d %X %Y"), "\n", file=stderr())
 
   output$ozoneCountry_2040 <- renderggiraph({
     world <- map_data("world")
-    ozoneDF<-setNames(data.frame(df[1],df[2]*-1*input$obs*(1/170)),c("Country","OzoneReduction"))
+    ozoneDF<-setNames(data.frame(df[1],df[2]*-1*input$obs*(1/134)),c("Country","OzoneReduction"))
     map.world_joined <- left_join(world, ozoneDF, by = c('region' = 'Country'))
     # using width="auto" and height="auto" to
     # automatically adjust the map size
@@ -52,7 +48,7 @@ cat("\nEXECUTION ", format(Sys.time(), "%a %b %d %X %Y"), "\n", file=stderr())
   dfSAT <- data.frame(surfaceTemp["Country"],surfaceTemp["NationalAverageC"])
   output$dSAT_2040 <-renderggiraph({
     world <- map_data("world")
-    satDF<-setNames(data.frame(df[1],dfSAT[2]*input$obs*(1/170)),c("Country","AvoidedWarming"))
+    satDF<-setNames(data.frame(df[1],dfSAT[2]*input$obs*(1/134)),c("Country","AvoidedWarming"))
     map.world_joined <- left_join(world, satDF, by = c('region' = 'Country'))
     # using width="auto" and height="auto" to
     # automatically adjust the map size
@@ -70,10 +66,10 @@ cat("\nEXECUTION ", format(Sys.time(), "%a %b %d %X %Y"), "\n", file=stderr())
   dfAsthmaER <- data.frame(asthmaERV["Country"],asthmaERV["CasesMEANper10Mt"],asthmaERV["CostsMEAN2018USDperkt"])
   output$ozoneAsthmaER_2040 <-renderggiraph({
     world <- map_data("world")
-    asthmaDF<-setNames(data.frame(df[1], dfAsthmaER[2]*input$obs*(1/10)),c("Country","AvoidedVisits"))
+    asthmaDF<-setNames(data.frame(df[1], dfAsthmaER[2]*input$obs*(17/134)),c("Country","AvoidedVisits"))
+    # data is outdated and assumed 170 Mt methane between sims 1 and 2, really 134, so adjustment here * 170/134 (plus 1/10)
     map.world_joined <- left_join(world, asthmaDF, by = c('region' = 'Country'))
-    # using width="auto" and height="auto" to
-    # automatically adjust the map size
+    # using width="auto" and height="auto" to automatically adjust the map size
     gg<-ggplot() + geom_polygon_interactive(data = map.world_joined, 
                                             aes(x = long, y = lat, group = group, fill = AvoidedVisits, tooltip
 =sprintf("%s<br/>%s",region, AvoidedVisits)))
@@ -88,7 +84,7 @@ cat("\nEXECUTION ", format(Sys.time(), "%a %b %d %X %Y"), "\n", file=stderr())
   #dfAsthmaER <- data.frame(asthmaERV["Country"],asthmaERV["CasesMEANper10Mt"],asthmaERV["CostsMEAN2018USDperkt"])
   output$ozoneAsthmaERCost_2040 <-renderggiraph({
     world <- map_data("world")
-    asthmaDFcost<-setNames(data.frame(df[1], dfAsthmaER[3]*input$obs*(1000)),c("Country","AvoidedCosts"))
+    asthmaDFcost<-setNames(data.frame(df[1], dfAsthmaER[3]*input$obs*(1700/1.34)),c("Country","AvoidedCosts"))
     map.world_joined <- left_join(world, asthmaDFcost, by = c('region' = 'Country'))
     # using width="auto" and height="auto" to
     # automatically adjust the map size
@@ -104,18 +100,11 @@ cat("\nEXECUTION ", format(Sys.time(), "%a %b %d %X %Y"), "\n", file=stderr())
   #Delta Total Mortality Map
   
   dfAF <- data.frame(afFormat["TotalOAF"],afFormat["InitialMort"])
-  #avoided deaths - 2045 is just temporary
-  output$dMortCountry_2040 <-renderggiraph({
-    #how it's done in the excel sheet below
-    #recomment what calculations I did and what the dataframes mean
-    #=IF((Input!C10-Input!$C$7+$C4)<0,0,1-EXP(-Input!$G$4*(Input!C10-Input!$C$7+$C4)))
-    #=IF((Input!C162-Input!$C$7+$C156)<0,0,1-EXP(-Input!$G$4*(Input!C162-Input!$C$7+$C156)))
-    #=$J4*Population!C4*'Baseline Mortality'!C4
-    #=X4-AK4
-    
+  #avoided deaths
+  output$dMortCountry_2040 <-renderggiraph({    
     #below sets up the two columns of the truth statement for Mean AF
-    meanAF<-data.frame((data.frame((df[2]*input$obs*(1/170))-EpiTMREL)+dfO3[2]))
-    tempExpFrame<-data.frame(1-exp((data.frame((df[2]*input$obs*(1/170))-EpiTMREL)+dfO3[2])*-1*EpiBeta))
+    meanAF<-data.frame((data.frame((df[2]*input$obs*(1/134))-EpiTMREL)+dfO3[2]))
+    tempExpFrame<-data.frame(1-exp((data.frame((df[2]*input$obs*(1/134))-EpiTMREL)+dfO3[2])*-1*EpiBeta))
     #below is the Mean AF
     meanAF[2] <- ifelse(meanAF[1]<0,0,tempExpFrame[1])
     deathCol<-ceiling(-1*data.frame(meanAF[2])*dfAF[1]+dfAF[2])
@@ -140,8 +129,8 @@ sprintf("%s<br/>%s",region,AvoidedDeaths)))
   output$dMortCountry_capita_2040 <-renderggiraph({
     
     #below sets up the two columns of the truth statement for Mean AF
-    meanAF<-data.frame((data.frame((df[2]*input$obs*(1/170))-EpiTMREL)+dfO3[2]))
-    tempExpFrame<-data.frame(1-exp((data.frame((df[2]*input$obs*(1/170))-EpiTMREL)+dfO3[2])*-1*EpiBeta))
+    meanAF<-data.frame((data.frame((df[2]*input$obs*(1/134))-EpiTMREL)+dfO3[2]))
+    tempExpFrame<-data.frame(1-exp((data.frame((df[2]*input$obs*(1/134))-EpiTMREL)+dfO3[2])*-1*EpiBeta))
     #below is the Mean AF
     meanAF[2] <- ifelse(meanAF[1]<0,0,tempExpFrame[1])
     deathCol<-ceiling((-1*data.frame(meanAF[2])*dfAF[1]+dfAF[2])/(dfPOP[2]/1000000))
@@ -166,8 +155,8 @@ sprintf("%s<br/>%s",region,AvoidedDeaths)))
   output$dMortCountry_VSL_2040 <-renderggiraph({
     
     #below sets up the two columns of the truth statement for Mean AF
-    meanAF<-data.frame((data.frame((df[2]*input$obs*(1/170))-EpiTMREL)+dfO3[2]))
-    tempExpFrame<-data.frame(1-exp((data.frame((df[2]*input$obs*(1/170))-EpiTMREL)+dfO3[2])*-1*EpiBeta))
+    meanAF<-data.frame((data.frame((df[2]*input$obs*(1/134))-EpiTMREL)+dfO3[2]))
+    tempExpFrame<-data.frame(1-exp((data.frame((df[2]*input$obs*(1/134))-EpiTMREL)+dfO3[2])*-1*EpiBeta))
     #below is the Mean AF
     meanAF[2] <- ifelse(meanAF[1]<0,0,tempExpFrame[1])
     deathCol<-ceiling((-1*data.frame(meanAF[2])*dfAF[1]+dfAF[2])*dfVSL[2])

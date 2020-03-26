@@ -72,7 +72,14 @@ shinyUI(dashboardPage(skin='blue',
               ),
  
               h4("The above map shows the monetized value of reduced risk of premature death due to respiratory and cardiovascular illnesses caused by ozone in persons of age 30 and older. Results are based upon the relationship between ozone exposure and health impacts determined from the American Cancer Society Cancer Prevention Study II that followed more than 660,000 people for 22 years and quantified the increased risk of heart disease, cerebrovascular disease, pneumonia and influenza, chronic obstructive pulmonary disease and lung cancer with increased ozone exposure. Those increased risks are combined with data on public health conditions and population distributions to evaluate worldwide health burdens. Valuation of reduced risk is based upon willingness to pay data, adjusted to local income levels (all using 2018 USD). Uncertainties in these values stem from both the underlying exposure-response relationships and the ozone response to methane. These vary slightly from country to country, but the 95% confidence interval extends from ~60% lower to 75% higher than the best estimates shown here."),
-              fluidRow(
+                            fluidRow(
+              
+                box(title = "Change in Yield of Wheat due to Climate and Ozone Response to Methane", 
+                    width = 12,
+                    ggiraphOutput("Wheat_kt"))
+              ),
+             h4("The above map shows the change in yield of wheat in response to the input methane emissions changes. Values are based on the multi-model mean of the participating models' temperature, precipitation and ozone responses along with a small contribution from CO2 fertilization. Additional analyses demonstrated that ozone responses are approximately linearly proportional to methane emissions changes, so that these interpolated results are accurate for current background atmospheric conditions."),
+             fluidRow(
               
                 box(title = "Change in Asthma-related Emergency Room Visits due to Ozone Exposure", 
                     width = 12,

@@ -8,6 +8,7 @@ allagePop <-read.csv("csvData/AllAgePopulation.csv")
 surfaceTemp <-read.csv("csvData/Country_Level_Temp_Change_MMM_1StandardErrors_50%_ValidDataEachCountry.csv")
 nationalVSL <-read.csv("csvData/VSL2018USD.csv")
 asthmaERV <-read.csv("csvData/AsthmaEV4Mar2020.csv")
+wheatkt <-read.csv("csvData/wheat_countryvalue_CropYieldsLoss_03202020.csv")
 
 shinyServer(function(input, output){
 
@@ -56,6 +57,23 @@ cat("\nEXECUTION ", format(Sys.time(), "%a %b %d %X %Y"), "\n", file=stderr())
                                             aes(x = long, y = lat, group = group, fill = AvoidedWarming, tooltip
 =sprintf("%s<br/>%s",region,AvoidedWarming)))
      gg<-gg+ scale_fill_gradient(low = "grey95", high = "tomato")
+    gg<-gg+ coord_proj("+proj=robin +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs")
+    gg<-gg+theme_map()
+    ggiraph(code = print(gg), width_svg=10)
+  })
+
+    #Delta Wheat yield Map
+
+  dfWheatkt <- data.frame(wheatkt["COUNTRY"], wheatkt["kt"])
+  output$Wheat_kt <-renderggiraph({
+    world <- map_data("world")
+    wheatDF<-setNames(data.frame(df[1], dfWheatkt[2]*input$obs/13.4),c("Country","kt"))
+    map.world_joined <- left_join(world, wheatDF, by = c('region' = 'Country'))
+    # using width="auto" and height="auto" to automatically adjust the map size
+    gg<-ggplot() + geom_polygon_interactive(data = map.world_joined, 
+                                            aes(x = long, y = lat, group = group, fill = kt, tooltip
+=sprintf("%s<br/>%s",region, kt)))
+    gg<-gg+ scale_fill_gradient(low = "grey95", high = "tomato")
     gg<-gg+ coord_proj("+proj=robin +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs")
     gg<-gg+theme_map()
     ggiraph(code = print(gg), width_svg=10)

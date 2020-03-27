@@ -1,0 +1,25 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1585345560573.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1772035377",
+    "id" : "60CEBCFB",
+    "lastKnownWriteTime" : 1585345698,
+    "last_content_update" : 1585345698036,
+    "path" : "~/Documents/GitHub/ShindellApp/server.R",
+    "project_path" : "server.R",
+    "properties" : {
+        "cursorPosition" : "21,29",
+        "scrollLine" : "14"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

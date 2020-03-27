@@ -1,0 +1,9 @@
+{
+    "path" : "~/Documents/GitHub/ShindellApp/csvData",
+    "sortOrder" : [
+        {
+            "ascending" : false,
+            "columnIndex" : 2
+        }
+    ]
+}

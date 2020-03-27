@@ -1,8 +1,8 @@
 # Read files into global memory
 countries_mmm <-read.csv("csvData/MMMresults.csv")
-initialmort <- read.csv("csvData/InitialMort.csv")
 initialO3 <- read.csv("csvData/InitialO3.csv")
-afFormat <-read.csv("csvData/AFFormatted.csv")
+initial_resp<-read.csv("csvData/Initial_Resp.csv")
+initial_cardio<-read.csv("csvData/Initial_Cardio.csv")
 allagePop <-read.csv("csvData/AllAgePopulation.csv")
 surfaceTemp <-read.csv("csvData/Country_Level_Temp_Change_MMM_1StandardErrors_50%_ValidDataEachCountry.csv")
 nationalVSL <-read.csv("csvData/VSL2018USD.csv")
@@ -14,10 +14,9 @@ shinyServer(function(input, output){
 cat("\nEXECUTION ", format(Sys.time(), "%a %b %d %X %Y"), "\n", file=stderr())
 #cat("\n\nAAAAAAAAAAAAAAAAAAAA\n\n", file=stderr())
   #Environment variablesmor 
-  EpiHR = 1.12
   EpiTMREL = 26.3
   EpiBeta = .01133
-  
+  EpiBetaCard = 0.00296
   #text render
   n = renderText({input$obs})
   output$caption <- renderText({
@@ -113,17 +112,17 @@ cat("\nEXECUTION ", format(Sys.time(), "%a %b %d %X %Y"), "\n", file=stderr())
     ggiraph(code = print(gg), width_svg=10)
   })
 
-  #Delta Total Mortality Map
+  #Delta Total Resp Mortality Map
   
-  dfAF <- data.frame(afFormat["TotalOAF"],afFormat["InitialMort"])
+  dfResp <- data.frame(initial_resp["PopTimesBaseMort"],initial_resp["InitialMort"])
   #avoided deaths
-  output$dMortCountry_2040 <-renderggiraph({    
+  output$dMortRespCountry_2040 <-renderggiraph({    
     #below sets up the two columns of the truth statement for Mean AF
     meanAF<-data.frame((data.frame((df[2]*input$obs*(1/134))-EpiTMREL)+dfO3[2]))
     tempExpFrame<-data.frame(1-exp((data.frame((df[2]*input$obs*(1/134))-EpiTMREL)+dfO3[2])*-1*EpiBeta))
     #below is the Mean AF
     meanAF[2] <- ifelse(meanAF[1]<0,0,tempExpFrame[1])
-    deathCol<-ceiling(-1*data.frame(meanAF[2])*dfAF[1]+dfAF[2])
+    deathCol<-ceiling(-1*data.frame(meanAF[2])*dfResp[1]+dfResp[2])
     deathFram <- data.frame(df[1],deathCol)
     dfDeaths <- setNames(deathFram,c("Country","AvoidedDeaths"))
     
@@ -138,18 +137,42 @@ sprintf("%s<br/>%s",region,AvoidedDeaths)))
     gg<-gg+theme_map() 
     ggiraph(code = print(gg), width_svg=10)
   })
-
-  #Delta Per Capita Mortality Map
+  #Delta Total Cardio Mortality Map
+  
+  dfCard <- data.frame(initial_cardio["PopTimesBaseMort"],initial_cardio["InitialMort"])
+  #avoided deaths
+  output$dMortCardCountry_2040 <-renderggiraph({    
+    #below sets up the two columns of the truth statement for Mean AF
+    meanAF<-data.frame((data.frame((df[2]*input$obs*(1/134))-EpiTMREL)+dfO3[2]))
+    tempExpFrame<-data.frame(1-exp((data.frame((df[2]*input$obs*(1/134))-EpiTMREL)+dfO3[2])*-1*EpiBetaCard))
+    #below is the Mean AF
+    meanAF[2] <- ifelse(meanAF[1]<0,0,tempExpFrame[1])
+    deathCol<-ceiling(-1*data.frame(meanAF[2])*dfCard[1]+dfCard[2])
+    deathFram <- data.frame(df[1],deathCol)
+    dfDeaths <- setNames(deathFram,c("Country","AvoidedDeaths"))
+    
+    #plot everything below
+    world <- map_data("world")
+    map.world_joined <- left_join(world, dfDeaths, by = c('region' = 'Country'))
+    gg<-ggplot() + geom_polygon_interactive(data = map.world_joined, 
+                                            aes(x = long, y = lat, group = group, fill = AvoidedDeaths, tooltip=
+                                                  sprintf("%s<br/>%s",region,AvoidedDeaths)))
+    gg<-gg+ scale_fill_gradient(low = "grey95", high = "tomato")
+    gg<-gg+ coord_proj("+proj=robin +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs")
+    gg<-gg+theme_map() 
+    ggiraph(code = print(gg), width_svg=10)
+  })
+  #Delta Per Capita Resp Mortality Map
   
   dfPOP <- data.frame(allagePop["Country"],allagePop["Population"])
-  output$dMortCountry_capita_2040 <-renderggiraph({
+  output$dMortRespCountry_capita_2040 <-renderggiraph({
     
     #below sets up the two columns of the truth statement for Mean AF
     meanAF<-data.frame((data.frame((df[2]*input$obs*(1/134))-EpiTMREL)+dfO3[2]))
     tempExpFrame<-data.frame(1-exp((data.frame((df[2]*input$obs*(1/134))-EpiTMREL)+dfO3[2])*-1*EpiBeta))
     #below is the Mean AF
     meanAF[2] <- ifelse(meanAF[1]<0,0,tempExpFrame[1])
-    deathCol<-ceiling((-1*data.frame(meanAF[2])*dfAF[1]+dfAF[2])/(dfPOP[2]/1000000))
+    deathCol<-ceiling((-1*data.frame(meanAF[2])*dfResp[1]+dfResp[2])/(dfPOP[2]/1000000))
     deathFram <- data.frame(df[1],deathCol)
     dfDeaths <- setNames(deathFram,c("Country","AvoidedDeaths"))
     
@@ -175,7 +198,7 @@ sprintf("%s<br/>%s",region,AvoidedDeaths)))
     tempExpFrame<-data.frame(1-exp((data.frame((df[2]*input$obs*(1/134))-EpiTMREL)+dfO3[2])*-1*EpiBeta))
     #below is the Mean AF
     meanAF[2] <- ifelse(meanAF[1]<0,0,tempExpFrame[1])
-    deathCol<-ceiling((-1*data.frame(meanAF[2])*dfAF[1]+dfAF[2])*dfVSL[2])
+    deathCol<-ceiling((-1*data.frame(meanAF[2])*dfResp[1]+dfResp[2])*dfVSL[2])
     deathFram <- data.frame(df[1],deathCol)
     dfDeaths <- setNames(deathFram,c("Country","MillionsUSD"))
     

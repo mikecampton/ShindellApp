@@ -5,15 +5,15 @@
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "1772035377",
+    "hash" : "1175669475",
     "id" : "60CEBCFB",
-    "lastKnownWriteTime" : 1585345698,
-    "last_content_update" : 1585345698036,
+    "lastKnownWriteTime" : 1585349455,
+    "last_content_update" : 1585349455532,
     "path" : "~/Documents/GitHub/ShindellApp/server.R",
     "project_path" : "server.R",
     "properties" : {
-        "cursorPosition" : "21,29",
-        "scrollLine" : "14"
+        "cursorPosition" : "15,28",
+        "scrollLine" : "13"
     },
     "read_only" : false,
     "read_only_alternatives" : [
